@@ -28,6 +28,8 @@ enum Constants {
     static let FreezeCounter = "out of 2 Freezes used"
     static let DaysLearned = "Days Learned"
     static let DaysFreezed = "Days Freezed"
+    static let oneDaysLearned = "Day Learned"
+    static let oneDaysFreezed = "Day Freezed"
 }
 
 

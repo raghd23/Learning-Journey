@@ -8,14 +8,21 @@
 import SwiftUI
 
 struct GoalPage: View {
+    @Environment(\.modelContext) private var context
+    @ObservedObject var viewModel: GoalViewModel
     @State private var showingAlert = false
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var learnerGoal: String = ""
+    @State private var selected: GoalDurationType = .week
+
 
     var body: some View {
         VStack(alignment: .leading) {
             Spacer().frame(height: 56)
 
             // Your existing custom form
-            FormView()
+            FormView(learnerGoal: $learnerGoal, selected: $selected)
 
             Spacer()
         }
@@ -41,9 +48,11 @@ struct GoalPage: View {
         // iOS-style alert popup
         .alert("Update Learning goal", isPresented: $showingAlert) {
             Button("Dismiss", role: .cancel) { }
-            Button("Update", role: .destructive) {
-                // Handle the update action here (save, reset streak, etc.)
-                print("Goal updated, streak reset!")
+            Button("Update", role: .confirm) {
+                guard let goal = viewModel.currentGoal else { return }
+                viewModel.addGoal(title: learnerGoal, duration: selected, context: context)
+            //    viewModel.resetStreak(for: goal, context: context)
+                dismiss()
             }
         } message: {
             Text("If you update now, your streak will start over.")
@@ -53,6 +62,6 @@ struct GoalPage: View {
 }
 
 #Preview {
-    GoalPage()
+ //   GoalPage()
 }
 

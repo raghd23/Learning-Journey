@@ -24,6 +24,6 @@ struct Learning_JourneyApp: App {
             } else {
                 ContentView()
             }
-        }
+        }.modelContainer(for: [Goal.self, GoalDay.self])
     }
 }

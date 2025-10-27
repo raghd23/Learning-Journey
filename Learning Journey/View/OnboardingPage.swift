@@ -10,12 +10,15 @@ import SwiftData
 
 struct ContentView: View {
     @AppStorage("hasSeenOnboarding") var hasSeenOnboarding = false
+    @Environment(\.modelContext) private var context
+    @StateObject private var viewModel = GoalViewModel()
+    
+    @State private var learnerGoal: String = ""
+    @State private var selected: GoalDurationType = .week
 
     var body: some View {
         ZStack {
-            Color(.systemBackground)
-                .ignoresSafeArea()
-
+            Color(.systemBackground).ignoresSafeArea()
             VStack {
                 ZStack {
                     Circle()
@@ -27,7 +30,6 @@ struct ContentView: View {
                 }
 
                 Spacer().frame(height: 80)
-
                 VStack(alignment: .leading, spacing: 8) {
                     Text(Constants.welocomeMassage)
                         .foregroundColor(.primaryText)
@@ -36,14 +38,15 @@ struct ContentView: View {
                     Text(Constants.appDescreption)
                         .foregroundColor(.secondaryText)
                     Spacer().frame(height: 24)
-                    FormView()
+
+                    FormView(learnerGoal: $learnerGoal, selected: $selected)
                 }
 
                 Spacer().frame(height: 160)
-
-                Button(Constants.startLearning) {
-                    // When tapped, mark onboarding as done
-                    hasSeenOnboarding = true
+                Button("Start Learning") {
+                    guard !learnerGoal.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+                                     viewModel.addGoal(title: learnerGoal, duration: selected, context: context)
+                                     hasSeenOnboarding = true
                 }
                 .frame(width: 160, height: 48)
                 .foregroundColor(.primaryText)

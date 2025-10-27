@@ -7,16 +7,20 @@
 
 import Foundation
 import SwiftUI
-
+import SwiftData
 
 struct CalendarView: View {
+    var goal: Goal? // 🟠 Injected from ActivityPage (viewModel.currentGoal)
+    @Query private var allDays: [GoalDay]
     @State private var currentDate = Date()
     @State private var showPicker = false
+
+    private let calendar = Calendar.current
 
     var body: some View {
         ZStack {
             VStack(alignment: .leading, spacing: 16) {
-                // Header
+                // MARK: Header (unchanged)
                 HStack {
                     Button {
                         withAnimation(.spring()) { showPicker.toggle() }
@@ -34,16 +38,21 @@ struct CalendarView: View {
                     Spacer()
 
                     HStack(spacing: 12) {
-                        Button { currentDate = CalendarHelpers.shiftMonth(currentDate, by: -1) } label: {
+                        Button {
+                            currentDate = CalendarHelpers.shiftMonth(currentDate, by: -1)
+                        } label: {
                             Image(systemName: "chevron.left").foregroundColor(.orange)
                         }
-                        Button { currentDate = CalendarHelpers.shiftMonth(currentDate, by: 1) } label: {
+
+                        Button {
+                            currentDate = CalendarHelpers.shiftMonth(currentDate, by: 1)
+                        } label: {
                             Image(systemName: "chevron.right").foregroundColor(.orange)
                         }
                     }
                 }
 
-                // Weekday row
+                // MARK: Weekday row
                 HStack(spacing: 10) {
                     ForEach(CalendarHelpers.calendar.shortWeekdaySymbols, id: \.self) {
                         Text($0.uppercased())
@@ -53,14 +62,15 @@ struct CalendarView: View {
                     }
                 }
 
-                // Example week
+                // MARK: Dynamic Week Display
                 HStack(spacing: 10) {
-                    ForEach(CalendarHelpers.weekDays(for: currentDate), id: \.self) { d in
-                        Text("\(CalendarHelpers.calendar.component(.day, from: d))")
+                    ForEach(currentWeekDays(), id: \.self) { date in
+                        let state = dayState(for: date)
+                        Text("\(CalendarHelpers.calendar.component(.day, from: date))")
                             .font(.system(size: 18, weight: .medium))
                             .foregroundColor(.white.opacity(0.9))
                             .frame(width: 32, height: 32)
-                            .background(Color.clear)
+                            .background(color(for: state))
                             .clipShape(Circle())
                             .frame(maxWidth: .infinity)
                     }
@@ -68,13 +78,30 @@ struct CalendarView: View {
 
                 Divider().background(.white.opacity(0.2))
 
-                Text("Learning Swift")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.white)
+                // MARK: Goal summary
+                if let goal = goal {
+                    Text(goal.title)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.white)
 
-                HStack(spacing: 16) {
-                    BadgeView(icon: "flame.fill", value: "3", label: "Days Learned", color: .orange)
-                    BadgeView(icon: "cube.fill", value: "1", label: "Day Freezed", color: .cyan)
+                    HStack(spacing: 16) {
+                        BadgeView(
+                            icon: "flame.fill",
+                            value: "\(goal.streakCount)",
+                            label: goal.streakCount==1 ? Constants.oneDaysLearned: Constants.DaysLearned,
+                            color: .orange
+                        )
+                        BadgeView(
+                            icon: "cube.fill",
+                            value: "\(goal.frozenCount)",
+                            label: goal.frozenCount==1 ? Constants.oneDaysFreezed: Constants.DaysFreezed,
+                            color: .cyan
+                        )
+                    }
+                } else {
+                    Text("No goal yet")
+                        .foregroundColor(.secondary)
+                        .font(.footnote)
                 }
             }
             .padding(20)
@@ -83,7 +110,7 @@ struct CalendarView: View {
             .cornerRadius(24)
             .blur(radius: showPicker ? 3 : 0)
 
-            // Custom Popover
+            // MARK: Popover Picker (unchanged)
             if showPicker {
                 Color.black.opacity(0.4)
                     .ignoresSafeArea()
@@ -104,6 +131,36 @@ struct CalendarView: View {
                 .transition(.scale)
                 .zIndex(1)
             }
+        }
+    }
+
+    // MARK: - Helper Logic
+
+    /// Returns 7 dates for the current week (Sunday → Saturday)
+
+    /// Returns 7 dates for the current week (Sunday → Saturday)
+    private func currentWeekDays() -> [Date] {
+        let cal = CalendarHelpers.calendar
+        let weekRange = cal.range(of: .weekday, in: .weekOfYear, for: currentDate) ?? 1..<8
+        guard let startOfWeek = cal.date(from: cal.dateComponents([.yearForWeekOfYear, .weekOfYear], from: currentDate)) else {
+            return []
+        }
+        return weekRange.compactMap { cal.date(byAdding: .day, value: $0 - 1, to: startOfWeek) }
+    }
+
+    /// ✅ Gets the goal day state for a given date (based on GoalDay records)
+    private func dayState(for date: Date) -> DayState {
+        let cal = CalendarHelpers.calendar
+        return allDays.first(where: { cal.isDate($0.date, inSameDayAs: date) })?.state ?? .none
+    }
+
+
+    /// Returns color based on state
+    private func color(for state: DayState) -> Color {
+        switch state {
+        case .learned: return .orange
+        case .frozen: return .cyan
+        case .none: return .clear
         }
     }
 }
