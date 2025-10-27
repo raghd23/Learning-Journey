@@ -49,7 +49,7 @@ struct GoalPage: View {
         .alert("Update Learning goal", isPresented: $showingAlert) {
             Button("Dismiss", role: .cancel) { }
             Button("Update", role: .confirm) {
-                guard let goal = viewModel.currentGoal else { return }
+                guard viewModel.currentGoal != nil else { return }
                 viewModel.addGoal(title: learnerGoal, duration: selected, context: context)
             //    viewModel.resetStreak(for: goal, context: context)
                 dismiss()

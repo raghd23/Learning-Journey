@@ -23,49 +23,56 @@ struct ActivityPage: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
+            ZStack (alignment: .top) {
                 Color(.systemBackground).ignoresSafeArea()
                 VStack {
                     CalendarView(goal: viewModel.currentGoal)
                     Spacer().frame(height: 24)
 
-                    Button("Log Learned") {
-                        if let goal = viewModel.currentGoal {
-                               viewModel.logLearn(for: goal, context: context)
-                           }                    }
-                    .font(.title)
-                    .bold()
-                    .frame(width: 272, height: 272)
-                    .foregroundColor(.primaryText)
-                    .background(
-                        Circle()
-                            .stroke(hasLoggedToday ? Color.gray.opacity(0.3) : Color.orange.opacity(0.0), lineWidth: 4)
-                            .shadow(radius: hasLoggedToday ? 0 : 4)
-                    )
-                    .glassEffect(.clear.tint(hasLoggedToday ? .black : .orange).interactive())
-                    .disabled(hasLoggedToday)
-
-                    Spacer().frame(height: 24)
-                    Button("Log Frozen") {
-                        if let goal = viewModel.currentGoal {
-                            viewModel.logFreeze(for: goal, state: .frozen, context: context)
+                    if viewModel.currentGoal?.isComplete == true
+                    {
+                        CompleteView(viewModel: viewModel) }
+                    else {
+                        Button(Constants.logLearned) {
+                            if let goal = viewModel.currentGoal {
+                                viewModel.logLearn(for: goal, context: context)
+                            }
                         }
-                        loggedToday = true
-                    }
-                    .frame(width: 272, height: 48)
-                    .foregroundColor(.primaryText)
-                    .background(
-                        RoundedRectangle(cornerRadius: 32)
-                            .stroke(hasLoggedToday || (viewModel.currentGoal?.frozenCount ?? 0) >= (viewModel.currentGoal?.freezeLimit ?? 0)
-                                    ? Color.gray.opacity(0.3) : Color.cyan, lineWidth: 2)
-                    )
-                    .cornerRadius(32)
-                    .glassEffect(.clear.tint(hasLoggedToday ? .black : .cyan).interactive())
-                    .disabled(hasLoggedToday || (viewModel.currentGoal?.frozenCount ?? 0) >= (viewModel.currentGoal?.freezeLimit ?? 0))
+                        .font(.system(size:40))
+                        .bold()
+                        .frame(width: 272, height: 272)
+                        .foregroundColor(.primaryText)
+                        .background(
+                            Circle()
+                                .stroke(hasLoggedToday ? Color.gray.opacity(0.3) : Color.orange.opacity(0.4), lineWidth: 2)
+                                .shadow(radius: hasLoggedToday ? 0 : 4)
+                        )
+                        .glassEffect(.clear.tint(hasLoggedToday ? .black : .orange.opacity(0.64)).interactive())
+                        .disabled(viewModel.hasLoggedToday(context: context))
 
-                    if let goal = viewModel.currentGoal {
-                        Text("\(goal.frozenCount) out of \(goal.freezeLimit) Freezes Used")
-                            .foregroundColor(.secondaryText)
+                        Spacer().frame(height: 24)
+                        Button(Constants.logFreezed) {
+                            if let goal = viewModel.currentGoal {
+                                       viewModel.logFreeze(for: goal, context: context)
+                                   }
+                        }
+                        .frame(width: 272, height: 48)
+                        .foregroundColor(.primaryText)
+                        .background(
+                            RoundedRectangle(cornerRadius: 32)
+                                .stroke(hasLoggedToday || (viewModel.currentGoal?.frozenCount ?? 0) >= (viewModel.currentGoal?.freezeLimit ?? 0)
+                                        ? Color.gray.opacity(0.3) : Color.cyan.opacity(0.4), lineWidth: 2)
+                        )
+                        .cornerRadius(32)
+                        .glassEffect(.clear.tint(hasLoggedToday ? .black : .cyan.opacity(0.64)).interactive())
+                        .disabled( viewModel.hasLoggedToday(context: context) ||
+                                   (viewModel.currentGoal?.frozenCount ?? 0) >= (viewModel.currentGoal?.freezeLimit ?? 0)
+                               )
+
+                        if let goal = viewModel.currentGoal {
+                            Text("\(goal.frozenCount) out of \(goal.freezeLimit) Freezes Used")
+                                .foregroundColor(.secondaryText)
+                        }
                     }
                 }
             }
@@ -90,6 +97,9 @@ struct ActivityPage: View {
                             .foregroundStyle(.primaryText)
                     }
                 }
+            }
+            .navigationDestination(isPresented: $navigateToCalendarPage) {
+                CalendarPage()  
             }
             .navigationDestination(isPresented: $navigateToGoalPage) {
                 GoalPage(viewModel: viewModel)

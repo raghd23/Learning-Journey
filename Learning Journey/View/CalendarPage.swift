@@ -6,8 +6,12 @@
 //
 
 import SwiftUI
+import SwiftData
+
+
 struct CalendarPage: View {
-    // Generate current + next 6 months
+    @Query private var allDays: [GoalDay] // ✅ SwiftData live fetch
+
     private let months: [Date] = {
         let calendar = Calendar.current
         let now = Date()
@@ -15,16 +19,7 @@ struct CalendarPage: View {
             calendar.date(byAdding: .month, value: offset, to: now)
         }
     }()
-    
-    // Example learned/freeze days for demonstration
-    let learnedDays: Set<Date> = [
-        makeDate(year: 2025, month: 10, day: 2),
-    ]
-    
-    let frozenDays: Set<Date> = [
-        makeDate(year: 2025, month: 10, day: 3),
-    ]
-    
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 32) {
@@ -36,8 +31,7 @@ struct CalendarPage: View {
                         
                         CalendarGrid(
                             month: month,
-                            learnedDays: learnedDays,
-                            frozenDays: frozenDays
+                            goalDays: allDays // ✅ pass fetched SwiftData records
                         )
                     }
                 }
@@ -46,26 +40,23 @@ struct CalendarPage: View {
             .padding(.top, 16)
         }
         .background(Color.black.ignoresSafeArea())
-        .navigationTitle("All activities")
+        .navigationTitle("All Activities")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
 
-// MARK: - Calendar Grid
 struct CalendarGrid: View {
     let month: Date
-    let learnedDays: Set<Date>
-    let frozenDays: Set<Date>
-    
+    let goalDays: [GoalDay] // ✅ All logged days
     private let cal = Calendar.current
-    
+
     private var daysInMonth: [Date] {
         guard let range = cal.range(of: .day, in: .month, for: month),
               let start = cal.date(from: cal.dateComponents([.year, .month], from: month))
         else { return [] }
         return range.compactMap { day in cal.date(byAdding: .day, value: day - 1, to: start) }
     }
-    
+
     var body: some View {
         VStack(spacing: 6) {
             // Weekday header
@@ -77,11 +68,11 @@ struct CalendarGrid: View {
                         .frame(maxWidth: .infinity)
                 }
             }
-            
+
             // Days grid
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 6) {
                 ForEach(daysInMonth, id: \.self) { date in
-                    let color = dayColor(for: date)
+                    let color = colorForDate(date)
                     Text("\(cal.component(.day, from: date))")
                         .frame(width: 32, height: 32)
                         .background(color.opacity(color == .clear ? 0 : 0.8))
@@ -92,15 +83,16 @@ struct CalendarGrid: View {
             }
         }
     }
-    
-    private func dayColor(for date: Date) -> Color {
-        if learnedDays.contains(where: { cal.isDate($0, inSameDayAs: date) }) {
-            return .orange
-        } else if frozenDays.contains(where: { cal.isDate($0, inSameDayAs: date) }) {
-            return .cyan
-        } else {
-            return .clear
+
+    private func colorForDate(_ date: Date) -> Color {
+        if let match = goalDays.first(where: { cal.isDate($0.date, inSameDayAs: date) }) {
+            switch match.state {
+            case .learned: return .orange.opacity(0.4)
+            case .frozen:  return .cyan.opacity(0.4)
+            case .none:    return .clear
+            }
         }
+        return .clear
     }
 }
 

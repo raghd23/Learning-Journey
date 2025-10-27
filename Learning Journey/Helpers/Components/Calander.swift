@@ -158,8 +158,8 @@ struct CalendarView: View {
     /// Returns color based on state
     private func color(for state: DayState) -> Color {
         switch state {
-        case .learned: return .orange
-        case .frozen: return .cyan
+        case .learned: return .orange.opacity(0.4)
+        case .frozen: return .cyan.opacity(0.4)
         case .none: return .clear
         }
     }

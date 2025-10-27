@@ -22,7 +22,11 @@ struct ContentView: View {
             VStack {
                 ZStack {
                     Circle()
-                        .glassEffect(.clear.tint(.orange.opacity(0.16)))
+                        .background(
+                            RoundedRectangle(cornerRadius: 56)
+                                .stroke(Color.orange.opacity(0.2), lineWidth: 2)
+                            )
+                        .glassEffect(.clear.tint(.orange.opacity(0.08)))
                         .frame(height: 104)
                     Image(systemName: "flame.fill")
                         .font(.system(size: 40))
@@ -43,7 +47,7 @@ struct ContentView: View {
                 }
 
                 Spacer().frame(height: 160)
-                Button("Start Learning") {
+                Button(Constants.startLearning) {
                     guard !learnerGoal.trimmingCharacters(in: .whitespaces).isEmpty else { return }
                                      viewModel.addGoal(title: learnerGoal, duration: selected, context: context)
                                      hasSeenOnboarding = true
@@ -51,7 +55,7 @@ struct ContentView: View {
                 .frame(width: 160, height: 48)
                 .foregroundColor(.primaryText)
                 .cornerRadius(32)
-                .glassEffect(.clear.tint(.orange).interactive())
+                .glassEffect(.clear.tint(.orange.opacity(0.56)).interactive())
             }
             .padding(.horizontal, 16)
         }
