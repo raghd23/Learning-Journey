@@ -30,6 +30,10 @@ enum Constants {
     static let DaysFreezed = "Days Freezed"
     static let oneDaysLearned = "Day Learned"
     static let oneDaysFreezed = "Day Freezed"
+    static let alertTitle = "Update Learning goal"
+    static let alertMsg = "If you update now, your streak will start over."
+    static let alertConfirm = "Update"
+    static let alertDismiss = "Dismiss"
 }
 
 

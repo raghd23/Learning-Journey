@@ -46,16 +46,16 @@ struct GoalPage: View {
             }
         }
         // iOS-style alert popup
-        .alert("Update Learning goal", isPresented: $showingAlert) {
-            Button("Dismiss", role: .cancel) { }
-            Button("Update", role: .confirm) {
-                guard viewModel.currentGoal != nil else { return }
+        .alert(Constants.alertTitle, isPresented: $showingAlert) {
+            Button(Constants.alertDismiss, role: .cancel) { }
+            Button(Constants.alertConfirm, role: .confirm) {
+                guard !learnerGoal.trimmingCharacters(in: .whitespaces).isEmpty else { return }
                 viewModel.addGoal(title: learnerGoal, duration: selected, context: context)
             //    viewModel.resetStreak(for: goal, context: context)
                 dismiss()
             }
         } message: {
-            Text("If you update now, your streak will start over.")
+            Text(Constants.alertMsg)
         }
     }
    
