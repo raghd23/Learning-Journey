@@ -49,26 +49,22 @@ class GoalViewModel: ObservableObject {
     // MARK: - Logging Actions
     func logLearn(for goal: Goal, context: ModelContext) {
         let today = Calendar.current.startOfDay(for: Date())
-
-        // 🟠 Avoid duplicate log for the same day
         guard !goal.hasLoggedToday() else { return }
 
-        // 🕐 Reset streak if more than 32 hours since last activity
         if let last = goal.lastLoggedDate,
            Date().timeIntervalSince(last) > (32 * 60 * 60) {
             goal.streakCount = 0
         }
 
-        // 📝 Create a new GoalDay and link it to the goal
         let entry = GoalDay(date: today, state: .learned)
         entry.goal = goal
         goal.days.append(entry)
-
         goal.streakCount += 1
         goal.lastLoggedDate = today
-
         try? context.save()
-        currentGoal = goal
+
+        // 👇 this line forces UI to see the updated goal immediately
+        fetchCurrentGoal(context: context)
     }
 
     func logFreeze(for goal: Goal, context: ModelContext) {

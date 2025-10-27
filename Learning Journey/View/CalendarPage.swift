@@ -57,6 +57,14 @@ struct CalendarGrid: View {
         return range.compactMap { day in cal.date(byAdding: .day, value: day - 1, to: start) }
     }
 
+    // ✅ Compute leading padding based on first weekday of the month
+    private var leadingSpaces: Int {
+        guard let firstDay = daysInMonth.first else { return 0 }
+        // Make Sunday = 0, Monday = 1, etc. for alignment
+        let weekdayIndex = cal.component(.weekday, from: firstDay) - cal.firstWeekday
+        return weekdayIndex < 0 ? weekdayIndex + 7 : weekdayIndex
+    }
+
     var body: some View {
         VStack(spacing: 6) {
             // Weekday header
@@ -71,6 +79,12 @@ struct CalendarGrid: View {
 
             // Days grid
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 6) {
+                // 🟠 Empty placeholders for correct alignment
+                ForEach(0..<leadingSpaces, id: \.self) { _ in
+                    Color.clear.frame(width: 32, height: 32)
+                }
+
+                // 🟢 Actual days
                 ForEach(daysInMonth, id: \.self) { date in
                     let color = colorForDate(date)
                     Text("\(cal.component(.day, from: date))")
