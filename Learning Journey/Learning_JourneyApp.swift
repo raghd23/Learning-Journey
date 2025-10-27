@@ -10,23 +10,20 @@ import SwiftData
 
 @main
 struct Learning_JourneyApp: App {
-//    var sharedModelContainer: ModelContainer = {
-//        let schema = Schema([
-//            Item.self,
-//        ])
-//        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-//
-//        do {
-//            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-//        } catch {
-//            fatalError("Could not create ModelContainer: \(error)")
-//        }
-//    }()
+    @AppStorage("hasSeenOnboarding") var hasSeenOnboarding = false
+    init() {
+        // Makes all system alerts (UIAlertController) use this tint
+        UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self])
+            .tintColor = UIColor.systemOrange
+    }
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if hasSeenOnboarding {
+                ActivityPage()
+            } else {
+                ContentView()
+            }
         }
-        //.modelContainer(sharedModelContainer)
     }
 }

@@ -8,116 +8,103 @@
 import Foundation
 import SwiftUI
 
+
 struct CalendarView: View {
     @State private var currentDate = Date()
     @State private var showPicker = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            // Header
-            HStack {
-                // Month-Year button
-                Button {
-                    showPicker.toggle()
-                } label: {
-                    HStack(spacing: 6) {
-                        Text(CalendarHelpers.monthYearString(currentDate))
-                            .font(.system(size: 18, weight: .semibold))
-                            .foregroundColor(.white)
-                        Image(systemName: "chevron.down")
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundColor(.orange)
+        ZStack {
+            VStack(alignment: .leading, spacing: 16) {
+                // Header
+                HStack {
+                    Button {
+                        withAnimation(.spring()) { showPicker.toggle() }
+                    } label: {
+                        HStack(spacing: 6) {
+                            Text(CalendarHelpers.monthYearString(currentDate))
+                                .font(.system(size: 18, weight: .semibold))
+                                .foregroundColor(.white)
+                            Image(systemName: "chevron.down")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundColor(.orange)
+                        }
+                    }
+
+                    Spacer()
+
+                    HStack(spacing: 12) {
+                        Button { currentDate = CalendarHelpers.shiftMonth(currentDate, by: -1) } label: {
+                            Image(systemName: "chevron.left").foregroundColor(.orange)
+                        }
+                        Button { currentDate = CalendarHelpers.shiftMonth(currentDate, by: 1) } label: {
+                            Image(systemName: "chevron.right").foregroundColor(.orange)
+                        }
                     }
                 }
-                .popover(isPresented: $showPicker,  arrowEdge: .top) {
-                  //  ZStack {
-                       // Color.clear.ignoresSafeArea()
-                        MonthYearWheelPopover(date: $currentDate, isPresented: $showPicker)
-                   // }
-                }
 
-                Spacer()
-
-                // Prev / Next buttons
-                HStack(spacing: 12) {
-                    Button { currentDate = CalendarHelpers.shiftMonth(currentDate, by: -1) } label: {
-                        Image(systemName: "chevron.left").foregroundColor(.orange)
-                    }
-                    Button { currentDate = CalendarHelpers.shiftMonth(currentDate, by: 1) } label: {
-                        Image(systemName: "chevron.right").foregroundColor(.orange)
+                // Weekday row
+                HStack(spacing: 10) {
+                    ForEach(CalendarHelpers.calendar.shortWeekdaySymbols, id: \.self) {
+                        Text($0.uppercased())
+                            .font(.system(size: 12))
+                            .foregroundColor(.gray)
+                            .frame(maxWidth: .infinity)
                     }
                 }
-            }
 
-            // Weekday row
-            HStack(spacing: 10) {
-                ForEach(CalendarHelpers.calendar.shortWeekdaySymbols, id: \.self) {
-                    Text($0.uppercased())
-                        .font(.system(size: 12))
-                        .foregroundColor(.gray)
-                        .frame(maxWidth: .infinity)
+                // Example week
+                HStack(spacing: 10) {
+                    ForEach(CalendarHelpers.weekDays(for: currentDate), id: \.self) { d in
+                        Text("\(CalendarHelpers.calendar.component(.day, from: d))")
+                            .font(.system(size: 18, weight: .medium))
+                            .foregroundColor(.white.opacity(0.9))
+                            .frame(width: 32, height: 32)
+                            .background(Color.clear)
+                            .clipShape(Circle())
+                            .frame(maxWidth: .infinity)
+                    }
                 }
-            }
 
-            // Example week
-            HStack(spacing: 10) {
-                ForEach(CalendarHelpers.weekDays(for: currentDate), id: \.self) { d in
-                    Text("\(CalendarHelpers.calendar.component(.day, from: d))")
-                        .font(.system(size: 18, weight: .medium))
-                        .foregroundColor(.white.opacity(0.9))
-                        .frame(width: 32, height: 32)
-                        .background(Color.clear)
-                        .clipShape(Circle())
-                        .frame(maxWidth: .infinity)
-                }
-            }
+                Divider().background(.white.opacity(0.2))
 
-            Divider().background(.white.opacity(0.2))
-
-            Text("Learning Swift")
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundColor(.white)
-
-            HStack(spacing: 16) {
-                BadgeView(icon: "flame.fill", value: "3", label: "Days Learned", color: .orange)
-                BadgeView(icon: "cube.fill", value: "1", label: "Day Freezed", color: .cyan)
-            }
-        }
-        .padding(20)
-        .frame(width: 360, height: 256)
-        .background(Color.black.opacity(0.6))
-        .cornerRadius(24)
-    }
-}
-// MARK: - Month-Year Popover
-struct MonthYearWheelPopover: View {
-    @Binding var date: Date
-    @Binding var isPresented: Bool
-
-    var body: some View {
-        VStack(alignment: .center) {
-//            Text("Select Month & Year")
-//                .font(.headline)
-//                .foregroundColor(.white)
-//                .padding(.horizontal)
-
-            MonthYearPicker(date: $date)
-
-            HStack {
-               // Spacer()
-                Button("Done") { isPresented = false }
-                    .frame(width:56, height : 32)
-                    .background(Color.orange)
+                Text("Learning Swift")
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.white)
-                    .cornerRadius(48)
-               // Spacer()
+
+                HStack(spacing: 16) {
+                    BadgeView(icon: "flame.fill", value: "3", label: "Days Learned", color: .orange)
+                    BadgeView(icon: "cube.fill", value: "1", label: "Day Freezed", color: .cyan)
+                }
             }
-            //.padding(.bottom, 10)
+            .padding(20)
+            .frame(width: 360, height: 256)
+            .background(Color.black.opacity(0.6))
+            .cornerRadius(24)
+            .blur(radius: showPicker ? 3 : 0)
+
+            // Custom Popover
+            if showPicker {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        withAnimation(.easeOut) { showPicker = false }
+                    }
+
+                VStack {
+                    MonthYearPicker(date: $currentDate)
+                        .frame(width: 260, height: 180)
+                        .background(Color.black.opacity(0.8))
+                        .cornerRadius(16)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(Color.orange.opacity(0.0), lineWidth: 1)
+                        )
+                }
+                .transition(.scale)
+                .zIndex(1)
+            }
         }
-        .frame(width: 320, height: 280)
-        .background(Color.black.opacity(0.92)) // dark dropdown
-        .cornerRadius(18)
-        
     }
 }
 

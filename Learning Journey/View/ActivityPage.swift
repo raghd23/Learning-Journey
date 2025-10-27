@@ -8,10 +8,6 @@
 import Foundation
 import SwiftUI
 
-import SwiftUI
-
-import SwiftUI
-
 struct ActivityPage: View {
     @State private var navigateToCalendarPage = false
     @State private var navigateToGoalPage = false
@@ -58,8 +54,8 @@ struct ActivityPage: View {
                     } label: {
                         Image(systemName: "calendar")
                             .foregroundStyle(.primaryText)
-                    }
-                    .glassEffect(.clear)
+                  }
+
                 }
                 
                 ToolbarSpacer(.fixed, placement: .primaryAction)
