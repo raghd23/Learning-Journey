@@ -2,10 +2,6 @@
 
 **Learning Journey** is an offline SwiftUI app that helps users **track their learning goals** and **stay consistent** through a simple, motivating **streak system**.
 
-<div align="center">
-  <img src="Simulator Screenshot - iPhone 17 Pro - 2025-10-28 at 09.21.58.jpeg" width="300"/>
-</div>
-
 ---
 
 ## ✨ Overview
