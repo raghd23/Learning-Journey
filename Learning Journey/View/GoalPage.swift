@@ -25,7 +25,7 @@ struct GoalPage: View {
             FormView(learnerGoal: $learnerGoal, selected: $selected)
 
             Spacer()
-        }
+        }.padding(.horizontal, 16)
         .accentColor(.orange)
         .padding(16)
         .navigationTitle("Learning Goal")

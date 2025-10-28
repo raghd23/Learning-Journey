@@ -19,8 +19,12 @@ struct CalendarHelpers {
     }
 
     // MARK: - Date Shifting
-    static func shiftMonth(_ date: Date, by delta: Int) -> Date {
-        calendar.date(byAdding: .month, value: delta, to: date) ?? date
+    static func shiftWeek(_ date: Date, by delta: Int) -> Date {
+        calendar.date(byAdding: .weekOfYear, value: delta, to: date) ?? date
+    }
+    
+    static func startOfWeek(for date: Date) -> Date {
+        calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date)) ?? date
     }
 
     // MARK: - Weekdays for current week
@@ -33,34 +37,34 @@ struct CalendarHelpers {
     static func isSameDay(_ d1: Date, _ d2: Date) -> Bool {
         calendar.isDate(d1, inSameDayAs: d2)
     }
-}
 
-// MARK: - Badge View Helper
-struct BadgeView: View {
-    let icon: String
-    let value: String
-    let label: String
-    let color: Color
-
-    var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: icon)
-                .foregroundColor(color)
-                .frame(width: 24)
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(value)
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(.white)
-                Text(label)
-                    .font(.system(size: 12))
-                    .foregroundColor(.white.opacity(0.9))
-            }
+    // MARK: - Month Utilities
+    static func nextMonths(count: Int = 3) -> [Date] {
+        (0..<count).compactMap { offset in
+            calendar.date(byAdding: .month, value: offset, to: Date())
         }
-        .frame(width: 160, height: 64)
-        .background(color.opacity(0.24))
-        .cornerRadius(48)
     }
+
+    static func makeDate(year: Int, month: Int, day: Int) -> Date {
+        calendar.date(from: DateComponents(year: year, month: month, day: day))!
+    }
+
+    static func daysInMonth(for month: Date) -> [Date] {
+        guard let range = calendar.range(of: .day, in: .month, for: month),
+              let start = calendar.date(from: calendar.dateComponents([.year, .month], from: month))
+        else { return [] }
+        return range.compactMap { day in
+            calendar.date(byAdding: .day, value: day - 1, to: start)
+        }
+    }
+
+    static func leadingSpaces(for month: Date) -> Int {
+        guard let firstDay = daysInMonth(for: month).first else { return 0 }
+        let weekdayIndex = calendar.component(.weekday, from: firstDay) - calendar.firstWeekday
+        return weekdayIndex < 0 ? weekdayIndex + 7 : weekdayIndex
+    }
+    
+        
 }
 
 
