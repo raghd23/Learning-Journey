@@ -22,7 +22,7 @@ struct CalendarPage: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text(CalendarHelpers.monthYearString(month))
                             .font(.headline)
-                            .foregroundColor(.white)
+                            .foregroundColor(.primaryText)
 
                         CalendarGrid(month: month, goalDays: allDays)
                     }

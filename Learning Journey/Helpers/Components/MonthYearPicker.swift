@@ -13,7 +13,7 @@ struct MonthYearPicker: UIViewRepresentable {
     class Coordinator: NSObject, UIPickerViewDataSource, UIPickerViewDelegate {
         var parent: MonthYearPicker
         let months = Calendar.current.monthSymbols
-        let years = Array(2000...2100)
+        let years = Array(2000...2050)
 
         init(_ parent: MonthYearPicker) { self.parent = parent }
 

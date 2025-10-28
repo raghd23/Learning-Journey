@@ -28,7 +28,7 @@ class GoalViewModel: ObservableObject {
     // MARK: - Create or Update the single Goal
     func addGoal(title: String, duration: GoalDurationType, context: ModelContext) {
         if let existing = try? context.fetch(FetchDescriptor<Goal>()).first {
-            // 🧠 Update current goal but keep its day history
+            //  Update current goal
             existing.title = title
             existing.durationType = duration
             existing.startDate = .now
@@ -38,7 +38,7 @@ class GoalViewModel: ObservableObject {
             try? context.save()
             currentGoal = existing
         } else {
-            // 🆕 First-time creation
+            // First time create goal
             let goal = Goal(title: title, startDate: .now, durationType: duration)
             context.insert(goal)
             try? context.save()
@@ -63,14 +63,14 @@ class GoalViewModel: ObservableObject {
         goal.lastLoggedDate = today
         try? context.save()
 
-        // 👇 this line forces UI to see the updated goal immediately
+        // forces UI to see the updated goal immediately
         fetchCurrentGoal(context: context)
     }
 
     func logFreeze(for goal: Goal, context: ModelContext) {
         let today = Calendar.current.startOfDay(for: Date())
 
-        // 🟣 Prevent duplicate or over-limit freezes
+        // Prevent duplicate or over-limit freezes
         guard !goal.hasLoggedToday(),
               goal.frozenCount < goal.freezeLimit else { return }
 

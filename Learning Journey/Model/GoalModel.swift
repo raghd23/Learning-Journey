@@ -148,12 +148,12 @@ class Goal {
         self.frozenCount = 0
     }
 
-    // computed freeze limit (based on duration type)
+    // computed freeze limit
     var freezeLimit: Int {
         durationType.freezeLimit
     }
 
-    // computed total days (for goal completion)
+    // computed total days
     var totalDays: Int {
         durationType.totalDays
     }
@@ -163,7 +163,7 @@ class Goal {
         return (streakCount + frozenCount) >= totalDays
     }
 
-    // helper: check if today already logged
+    // check if today already logged
     func hasLoggedToday() -> Bool {
         let today = Calendar.current.startOfDay(for: Date())
         return days.contains { Calendar.current.isDate($0.date, inSameDayAs: today) }

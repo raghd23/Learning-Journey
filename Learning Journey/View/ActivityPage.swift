@@ -40,15 +40,15 @@ struct ActivityPage: View {
                                 return goal.days.first(where: { Calendar.current.isDate($0.date, inSameDayAs: today) })?.state
                             }()
                             
-                            // 🟠 Determine visual style based on today's state
+                         
                             let learnedToday = todayLoggedState == .learned
                             let frozenToday  = todayLoggedState == .frozen
-                            let nothingToday = todayLoggedState == nil
+                          //  let nothingToday = todayLoggedState == nil
                             
-                            // MARK: - Main Learn Button
+                            // Learn Button
                             Button(
-                                learnedToday ? "Learned Today" :
-                                    frozenToday  ? "Day Frozen" :
+                                learnedToday ? Constants.DayLearned :
+                                    frozenToday  ? Constants.DayFreezed:
                                     Constants.logLearned
                             ) {
                                 if let goal = viewModel.currentGoal {
@@ -83,7 +83,7 @@ struct ActivityPage: View {
                             
                             Spacer().frame(height: 32)
                             
-                            // MARK: - Freeze Button
+                            // Freeze Button
                             Button(Constants.logFreezed) {
                                 if let goal = viewModel.currentGoal {
                                     viewModel.logFreeze(for: goal, context: context)
