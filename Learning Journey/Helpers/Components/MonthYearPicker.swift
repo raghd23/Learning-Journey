@@ -41,7 +41,7 @@ struct MonthYearPicker: UIViewRepresentable {
         let picker = UIPickerView()
         picker.dataSource = context.coordinator
         picker.delegate   = context.coordinator
-        picker.setValue(UIColor.white, forKey: "textColor")
+        picker.setValue(UIColor.primaryText, forKey: "textColor")
         picker.backgroundColor = .clear
         return picker
     }

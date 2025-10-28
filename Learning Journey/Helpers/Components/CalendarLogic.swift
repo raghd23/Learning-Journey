@@ -30,6 +30,6 @@ extension CalendarView {
     }
     
     func dayTextColor(for color: Color) -> Color {
-        color == .clear ? .white : color
+        color == .clear ? .primaryText : color
     }
 }

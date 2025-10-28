@@ -21,10 +21,10 @@ struct BadgeView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(value)
                     .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(.white)
+                    .foregroundColor(.primaryText)
                 Text(label)
                     .font(.system(size: 12))
-                    .foregroundColor(.white.opacity(0.9))
+                    .foregroundColor(.primaryText.opacity(0.9))
             }
         }
         .frame(width: 160, height: 64)

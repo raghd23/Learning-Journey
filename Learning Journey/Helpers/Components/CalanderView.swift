@@ -28,7 +28,7 @@ struct CalendarView: View {
                         HStack(spacing: 6) {
                             Text(CalendarHelpers.monthYearString(currentDate))
                                 .font(.system(size: 18, weight: .semibold))
-                                .foregroundColor(.white)
+                                .foregroundColor(.primaryText)
                             Image(systemName: "chevron.down")
                                 .font(.system(size: 12, weight: .semibold))
                                 .foregroundColor(.orange)
@@ -110,30 +110,34 @@ struct CalendarView: View {
            // .background(Color.black.opacity(0.6))
             .cornerRadius(24)
             .background(RoundedRectangle(cornerRadius: 16)
-                .stroke(.white.opacity(0.16),))
+                .stroke(Color(.systemBackground).opacity(0.16),))
             .blur(radius: showPicker ? 3 : 0)
             
             
-            // MARK: Popover Picker (unchanged)
+       
             if showPicker {
-                Color.black.opacity(0.4)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        withAnimation(.default) { showPicker = false }
-                    }
-                
                 ZStack {
+                    Color(.systemBackground).opacity(0.0)
+                        .ignoresSafeArea()
+                    
+                 
                     MonthYearPicker(date: $currentDate)
-                        .frame(width: 260, height: 180)
-                        .background(Color.black.opacity(0.8))
+                        .frame(width: 360, height: 200)
+                        .background(Color(.systemBackground).opacity(0.8))
                         .cornerRadius(16)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.orange.opacity(0.0), lineWidth: 1)
+                                .stroke(Color.orange.opacity(0.2), lineWidth: 1)
                         )
                 }
+                .contentShape(Rectangle()) // ensures full area is tappable
+                .onTapGesture {
+                    withAnimation(.easeOut) {
+                        showPicker = false
+                    }
+                }
                 .transition(.scale)
-               // .zIndex(1)
+                .zIndex(1)
             }
         }
     }

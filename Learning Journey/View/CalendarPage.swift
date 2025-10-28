@@ -31,7 +31,6 @@ struct CalendarPage: View {
             .padding(.horizontal, 16)
             .padding(.top, 16)
         }
-        .background(Color.black.ignoresSafeArea())
         .navigationTitle("All Activities")
         .navigationBarTitleDisplayMode(.inline)
     }
