@@ -53,18 +53,9 @@ The app works entirely **offline**, making it ideal for focused, distraction-fre
 
 ---
 
-## 📱 Screenshot
-
-| Activity Screen |
-|------------------|
-| <img src="Simulator Screenshot - iPhone 17 Pro - 2025-10-28 at 09.21.58.jpeg" width="280"/> |
-
----
-
 ## 💡 Future Enhancements
 
-- [ ] Weekly / Monthly insights  
-- [ ] Custom streak goals  
+- [ ] Weekly / Monthly insights   
 - [ ] Widget support  
 - [ ] Notifications for reminders  
 - [ ] Export progress as report  
