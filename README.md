@@ -7,7 +7,7 @@
 ## ✨ Overview
 
 Learning Journey is built to make personal growth measurable — one day at a time.  
-Users can log whether they **learned** or **froze** each day, keeping a streak that reflects their learning consistency.
+Users can log whether they **learned** or **freeze** each day, keeping a streak that reflects their learning consistency.
 
 The app works entirely **offline**, making it ideal for focused, distraction-free learning.
 
