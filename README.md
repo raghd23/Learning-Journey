@@ -27,7 +27,7 @@ The app works entirely **offline**, making it ideal for focused, distraction-fre
 
 - **Language:** Swift  
 - **Framework:** SwiftUI  
-- **Storage:** Core Data (offline persistence)  
+- **Storage:** Swift Data (offline persistence)  
 
 ---
 
